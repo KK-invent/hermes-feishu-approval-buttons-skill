@@ -1,7 +1,7 @@
 ---
 name: hermes-feishu-approval-buttons
 description: Use when you need clickable custom decision buttons in Feishu/Lark for Hermes Agent by piggybacking on terminal approval cards, especially when clarify renders as plain text or hermes-feishu-streaming-card interferes with approval rendering.
-version: 1.0.0
+version: 1.1.0
 author: Hermes Agent
 license: MIT
 platforms: [macos, linux]
