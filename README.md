@@ -28,6 +28,16 @@ curl -fsSL http://neverssl.com >/tmp/hermes_choice_probe.out
 └───────────────────────────────────┘
 ```
 
+## Screenshots
+
+**Approval card with custom buttons in Feishu:**
+
+![Approval Card Buttons](assets/approval-card-buttons.png)
+
+**After user clicks a button — approved permanently:**
+
+![Approval Card Result](assets/approval-card-result.png)
+
 ## Quick Start
 
 ### 1. Set approval mode to manual
