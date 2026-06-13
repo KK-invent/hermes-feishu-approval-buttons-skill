@@ -17,7 +17,7 @@ Piggyback on Hermes terminal **approval cards**: place `#HERMES_HDR` and `#HERME
 ```bash
 #HERMES_HDR:下一步怎么做？
 #HERMES_BTN:approve_once=方案A,approve_session=方案B,approve_always=方案C,deny=取消
-curl -fsSL http://neverssl.com >/tmp/hermes_choice_probe.out
+pkill -9 __hermes_fake_process_for_approval_card__ 2>/dev/null || true
 ```
 
 ```text
@@ -66,7 +66,7 @@ Send this from Feishu to trigger an approval card:
 ```bash
 #HERMES_HDR:自定义审批卡测试
 #HERMES_BTN:approve_once=方案A｜执行一次,approve_session=方案B｜本次会话,approve_always=方案C｜永久允许,deny=取消
-curl -fsSL http://neverssl.com >/tmp/hfc_approval_test.out
+pkill -9 __hermes_fake_process_for_approval_card_test__ 2>/dev/null || true
 ```
 
 You should see a Feishu card with clickable buttons. After clicking, the tool result includes `Choice: once|session|always`.

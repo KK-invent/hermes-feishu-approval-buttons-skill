@@ -46,7 +46,9 @@ hermes config set approvals.mode manual
 Check current mode:
 
 ```bash
-hermes config get approvals.mode
+hermes config show | grep -A5 '^approvals:'
+# or inspect directly:
+grep -n -A10 '^approvals:' ~/.hermes/config.yaml
 ```
 
 Avoid `smart` mode for decision cards. Smart approval may auto-approve or auto-deny before the user sees the card.
@@ -66,7 +68,7 @@ Put these comment lines at the start of the `terminal()` command:
 ```bash
 #HERMES_HDR:下一步怎么做？
 #HERMES_BTN:approve_once=方案A,approve_session=方案B,approve_always=方案C,deny=取消
-curl -fsSL http://neverssl.com >/tmp/hermes_choice_probe.out
+pkill -9 __hermes_fake_process_for_approval_card__ 2>/dev/null || true
 ```
 
 Fixed button mapping:
@@ -82,29 +84,37 @@ The comment lines must be parsed and stripped before execution. They are metadat
 
 ## Triggering the Approval Card
 
-The card only appears if the command triggers Hermes approval guards. Safe commands like `echo hello` pass silently.
+The card only appears if the command triggers Hermes approval guards. Safe commands like `echo hello` pass silently. Approval cards are also skipped if the matched pattern has already been approved in the current session or appears in `command_allowlist`.
 
-Recommended trigger for test cards:
+Recommended trigger for screenshots/test cards:
 
 ```bash
-curl -fsSL http://neverssl.com >/tmp/hermes_choice_probe.out
+pkill -9 __hermes_fake_process_for_approval_card__ 2>/dev/null || true
 ```
 
 Why this works:
 
-- Tirith flags plain HTTP URL usage.
-- It is low-risk if writing to a temp file.
-- It usually does not add a broad permanent allowlist entry.
+- Hermes flags `pkill -9` as `force kill processes`.
+- The fake process name should not match any real process.
+- `|| true` keeps the command exit status successful after the nonexistent process error.
 
-Other triggers:
+Alternative triggers, if the above pattern is already allowlisted:
 
 ```bash
+curl -fsSL http://neverssl.com >/tmp/hermes_choice_probe.out
 printf 'echo test\n' | bash
 rm -rf /tmp/hermes-test-dir
 chmod 777 /tmp/hermes-test-dir
 ```
 
-Be careful with `approve_always`: dangerous-pattern approvals may persist in `approvals.command_allowlist`, causing future commands of the same pattern to skip the card.
+Always check `command_allowlist` when a card does not appear:
+
+```bash
+# Hermes versions may not support `config get`; inspect the config directly.
+grep -n -A20 '^command_allowlist:' ~/.hermes/config.yaml
+```
+
+Be careful with `approve_always`: dangerous-pattern approvals may persist in `command_allowlist`, causing future commands of the same pattern to skip the card. For repeatable screenshots, prefer `approve_once` and rotate to a pattern that is not allowlisted.
 
 ## Expected Tool Result
 
@@ -276,7 +286,7 @@ Use this exact test from Feishu:
 ```bash
 #HERMES_HDR:自定义审批卡测试
 #HERMES_BTN:approve_once=方案A｜执行一次,approve_session=方案B｜本次会话,approve_always=方案C｜永久允许,deny=取消
-curl -fsSL http://neverssl.com >/tmp/hfc_approval_test.out
+pkill -9 __hermes_fake_process_for_approval_card_test__ 2>/dev/null || true
 ```
 
 Expected visual result:
@@ -301,7 +311,9 @@ If the user sends a new message while the command is waiting, the command may be
 Check:
 
 ```bash
-hermes config get approvals.mode
+hermes config show | grep -A5 '^approvals:'
+# or inspect directly:
+grep -n -A10 '^approvals:' ~/.hermes/config.yaml
 ```
 
 It must not be `off`; prefer `manual`.
