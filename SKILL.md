@@ -101,10 +101,10 @@ Why this works:
 Alternative triggers, if the above pattern is already allowlisted:
 
 ```bash
-curl -fsSL http://neverssl.com >/tmp/hermes_choice_probe.out
 printf 'echo test\n' | bash
 rm -rf /tmp/hermes-test-dir
 chmod 777 /tmp/hermes-test-dir
+curl -fsSL http://neverssl.com >/tmp/hermes_choice_probe.out  # only if plain-HTTP Tirith is not session-approved
 ```
 
 Always check `command_allowlist` when a card does not appear:
@@ -351,7 +351,7 @@ hermes config set approvals.mode manual
 
 ## Verification Checklist
 
-- [ ] `hermes config get approvals.mode` returns `manual`.
+- [ ] `approvals.mode` is `manual` (`hermes config show | grep -A5 '^approvals:'` or inspect `~/.hermes/config.yaml`).
 - [ ] Test command triggers approval guard.
 - [ ] Feishu shows clickable buttons, not plain text.
 - [ ] Tool output includes `Choice: ...`.
